@@ -1658,7 +1658,10 @@ bgm.volume = 0.5;
 
 // Hàm phát nhạc
 function startMusic() {
-    if (isPlaying) return;
+    if (!bgm.paused) {
+        isPlaying = true;
+        return;
+    }
 
     bgm.play()
         .then(() => {
@@ -1667,10 +1670,10 @@ function startMusic() {
             audioBtn.innerHTML =
                 '<i class="fas fa-volume-up"></i>';
 
-            console.log("🎵 Nhạc đã bắt đầu");
+            console.log("🎵 Music started");
         })
         .catch((error) => {
-            console.log("Không thể phát nhạc:", error);
+            console.log("🎵 Music play failed:", error);
         });
 }
 
