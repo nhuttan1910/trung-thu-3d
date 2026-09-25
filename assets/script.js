@@ -1646,23 +1646,64 @@ window.addEventListener("keydown", (e) => {
 });
 
 // AUDIO
+// AUDIO
 const bgm = document.getElementById("bgm");
 const audioBtn = document.getElementById("audio-btn");
+
 let isPlaying = false;
 
-audioBtn.addEventListener("click", () => {
-  if (isPlaying) {
-    bgm.pause();
-    audioBtn.innerHTML = '<i class="fas fa-music" style="opacity:0.5;"></i>';
-  } else {
-    bgm
-      .play()
-      .then(() => {
-        audioBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-      })
-      .catch(() => {});
-  }
-  isPlaying = !isPlaying;
+// Âm lượng ban đầu
+bgm.volume = 0.5;
+
+// Thử tự phát khi trang load
+window.addEventListener("load", () => {
+    bgm.play()
+        .then(() => {
+            isPlaying = true;
+            audioBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+        })
+        .catch(() => {
+            // Browser chặn autoplay → chờ lần tương tác đầu tiên
+            console.log("Autoplay bị trình duyệt chặn.");
+        });
+});
+
+// Nếu autoplay bị chặn,
+// lần tương tác đầu tiên trên trang sẽ kích hoạt nhạc
+function startMusicOnInteraction() {
+    if (isPlaying) return;
+
+    bgm.play()
+        .then(() => {
+            isPlaying = true;
+            audioBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+        })
+        .catch(() => {});
+}
+
+window.addEventListener("pointerdown", startMusicOnInteraction, {
+    once: true,
+    passive: true
+});
+
+// Nút bật / tắt nhạc
+audioBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    if (isPlaying) {
+        bgm.pause();
+        isPlaying = false;
+        audioBtn.innerHTML =
+            '<i class="fas fa-music" style="opacity:0.5;"></i>';
+    } else {
+        bgm.play()
+            .then(() => {
+                isPlaying = true;
+                audioBtn.innerHTML =
+                    '<i class="fas fa-volume-up"></i>';
+            })
+            .catch(() => {});
+    }
 });
 
 // ANIMATION
