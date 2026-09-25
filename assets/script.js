@@ -51,6 +51,271 @@ scene.add(treeLight);
 const warmLight = new THREE.PointLight(0xffaa33, 2.0, 30);
 warmLight.position.set(0, -2, 0);
 scene.add(warmLight);
+// ==========================
+// MOON
+// ==========================
+
+const MOON_POSITION = new THREE.Vector3(18, 25, -38);
+
+
+// ==========================
+// MOON TEXTURE
+// ==========================
+
+function createMoonTexture() {
+  const canvas = document.createElement("canvas");
+
+  canvas.width = 512;
+  canvas.height = 512;
+
+  const ctx = canvas.getContext("2d");
+
+  const gradient = ctx.createRadialGradient(
+    256,
+    256,
+    0,
+    256,
+    256,
+    256
+  );
+
+  // Tâm trăng rất sáng
+  gradient.addColorStop(
+    0,
+    "rgba(255, 255, 245, 1)"
+  );
+
+  gradient.addColorStop(
+    0.55,
+    "rgba(255, 248, 210, 1)"
+  );
+
+  gradient.addColorStop(
+    0.88,
+    "rgba(255, 225, 150, 1)"
+  );
+
+  gradient.addColorStop(
+    1,
+    "rgba(255, 210, 100, 1)"
+  );
+
+  ctx.fillStyle = gradient;
+
+  ctx.beginPath();
+
+  ctx.arc(
+    256,
+    256,
+    250,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fill();
+
+  return new THREE.CanvasTexture(canvas);
+}
+
+
+// ==========================
+// MOON BODY
+// ==========================
+
+const moonMaterial = new THREE.SpriteMaterial({
+  map: createMoonTexture(),
+
+  color: 0xffffff,
+
+  transparent: true,
+
+  opacity: 1,
+
+  toneMapped: false
+});
+
+const moon = new THREE.Sprite(
+  moonMaterial
+);
+
+moon.position.copy(
+  MOON_POSITION
+);
+
+// Kích thước mặt trăng
+moon.scale.set(
+  8,
+  8,
+  1
+);
+
+scene.add(moon);
+
+
+// ==========================
+// MOON GLOW TEXTURE
+// ==========================
+
+function createMoonGlowTexture() {
+
+  const canvas =
+    document.createElement("canvas");
+
+  canvas.width = 512;
+  canvas.height = 512;
+
+  const ctx =
+    canvas.getContext("2d");
+
+  const gradient =
+    ctx.createRadialGradient(
+      256,
+      256,
+      50,
+      256,
+      256,
+      256
+    );
+
+  gradient.addColorStop(
+    0,
+    "rgba(255,245,190,0.85)"
+  );
+
+  gradient.addColorStop(
+    0.25,
+    "rgba(255,230,150,0.5)"
+  );
+
+  gradient.addColorStop(
+    0.55,
+    "rgba(255,210,120,0.18)"
+  );
+
+  gradient.addColorStop(
+    1,
+    "rgba(255,200,100,0)"
+  );
+
+  ctx.fillStyle = gradient;
+
+  ctx.fillRect(
+    0,
+    0,
+    512,
+    512
+  );
+
+  return new THREE.CanvasTexture(canvas);
+}
+
+
+// ==========================
+// GLOW 1
+// ==========================
+
+const moonGlowMaterial =
+  new THREE.SpriteMaterial({
+
+    map: createMoonGlowTexture(),
+
+    color: 0xffe29a,
+
+    transparent: true,
+
+    opacity: 0.85,
+
+    blending:
+      THREE.AdditiveBlending,
+
+    depthWrite: false,
+
+    toneMapped: false
+
+  });
+
+const moonGlow =
+  new THREE.Sprite(
+    moonGlowMaterial
+  );
+
+moonGlow.position.copy(
+  MOON_POSITION
+);
+
+moonGlow.scale.set(
+  14,
+  14,
+  1
+);
+
+scene.add(
+  moonGlow
+);
+
+
+// ==========================
+// LARGE OUTER GLOW
+// ==========================
+
+const moonOuterGlowMaterial =
+  new THREE.SpriteMaterial({
+
+    map: createMoonGlowTexture(),
+
+    color: 0xffd27a,
+
+    transparent: true,
+
+    opacity: 0.35,
+
+    blending:
+      THREE.AdditiveBlending,
+
+    depthWrite: false,
+
+    toneMapped: false
+
+  });
+
+const moonOuterGlow =
+  new THREE.Sprite(
+    moonOuterGlowMaterial
+  );
+
+moonOuterGlow.position.copy(
+  MOON_POSITION
+);
+
+moonOuterGlow.scale.set(
+  22,
+  22,
+  1
+);
+
+scene.add(
+  moonOuterGlow
+);
+
+
+// ==========================
+// MOON LIGHT
+// ==========================
+
+const moonLight =
+  new THREE.PointLight(
+    0xffe6b0,
+    2.5,
+    120
+  );
+
+moonLight.position.copy(
+  MOON_POSITION
+);
+
+scene.add(
+  moonLight
+);
 
 // ISLAND
 const islandGroup = new THREE.Group();
@@ -279,70 +544,692 @@ treeGroup.add(blossomParticles);
 // RABBITS
 function createRabbit() {
   const group = new THREE.Group();
+
+  // ==========================
+  // MATERIALS
+  // ==========================
+
   const rabbitMat = new THREE.MeshStandardMaterial({
     color: 0xf8f8ff,
-    roughness: 0.5,
+    roughness: 0.55,
   });
 
-  const bodyGeo = new THREE.SphereGeometry(0.5, 12, 12);
-  bodyGeo.scale(0.8, 1, 0.9);
-  const bodyMesh = new THREE.Mesh(bodyGeo, rabbitMat);
-  bodyMesh.position.y = 0.4;
-  group.add(bodyMesh);
+  const innerEarMat = new THREE.MeshStandardMaterial({
+    color: 0xffb6c1,
+    roughness: 0.6,
+  });
 
-  const headGeo = new THREE.SphereGeometry(0.35, 12, 12);
-  const headMesh = new THREE.Mesh(headGeo, rabbitMat);
-  headMesh.position.set(0, 0.85, 0.2);
-  group.add(headMesh);
+  const eyeMat = new THREE.MeshBasicMaterial({
+    color: 0x111111,
+  });
 
-  const earGeo = new THREE.CylinderGeometry(0.04, 0.08, 0.5, 8);
-  const earLeft = new THREE.Mesh(earGeo, rabbitMat);
-  earLeft.position.set(-0.12, 1.25, 0.18);
+  const noseMat = new THREE.MeshBasicMaterial({
+    color: 0xff8fa3,
+  });
+
+
+  // ==========================
+  // BODY
+  // ==========================
+
+  const bodyGeo = new THREE.SphereGeometry(
+    0.5,
+    16,
+    16
+  );
+
+  const body = new THREE.Mesh(
+    bodyGeo,
+    rabbitMat
+  );
+
+  body.scale.set(
+    0.82,
+    1.0,
+    0.92
+  );
+
+  body.position.y = 0.42;
+
+  group.add(body);
+
+
+  // ==========================
+  // HEAD
+  // ==========================
+
+  const headGeo = new THREE.SphereGeometry(
+    0.36,
+    16,
+    16
+  );
+
+  const head = new THREE.Mesh(
+    headGeo,
+    rabbitMat
+  );
+
+  head.position.set(
+    0,
+    0.93,
+    0.22
+  );
+
+  group.add(head);
+
+
+  // ==========================
+  // OUTER EARS
+  // ==========================
+
+  const earGeo = new THREE.SphereGeometry(
+    0.12,
+    12,
+    12
+  );
+
+  earGeo.scale(
+    0.7,
+    2.5,
+    0.6
+  );
+
+  const earLeft = new THREE.Mesh(
+    earGeo,
+    rabbitMat
+  );
+
+  earLeft.position.set(
+    -0.13,
+    1.37,
+    0.18
+  );
+
   earLeft.rotation.z = 0.15;
-  earLeft.rotation.x = -0.1;
+
   group.add(earLeft);
 
+
   const earRight = earLeft.clone();
-  earRight.position.x = 0.12;
+
+  earRight.position.x = 0.13;
   earRight.rotation.z = -0.15;
+
   group.add(earRight);
+
+
+  // ==========================
+  // INNER EARS
+  // ==========================
+
+  const innerEarGeo = new THREE.SphereGeometry(
+    0.07,
+    10,
+    10
+  );
+
+  innerEarGeo.scale(
+    0.55,
+    2.7,
+    0.4
+  );
+
+  const innerEarLeft = new THREE.Mesh(
+    innerEarGeo,
+    innerEarMat
+  );
+
+  innerEarLeft.position.set(
+    -0.13,
+    1.37,
+    0.245
+  );
+
+  innerEarLeft.rotation.z = 0.15;
+
+  group.add(innerEarLeft);
+
+
+  const innerEarRight =
+    innerEarLeft.clone();
+
+  innerEarRight.position.x = 0.13;
+  innerEarRight.rotation.z = -0.15;
+
+  group.add(innerEarRight);
+
+
+  // ==========================
+  // EYES
+  // ==========================
+
+  const eyeGeo = new THREE.SphereGeometry(
+    0.045,
+    8,
+    8
+  );
+
+  const eyeLeft = new THREE.Mesh(
+    eyeGeo,
+    eyeMat
+  );
+
+  eyeLeft.position.set(
+    -0.13,
+    0.99,
+    0.53
+  );
+
+  group.add(eyeLeft);
+
+
+  const eyeRight = eyeLeft.clone();
+
+  eyeRight.position.x = 0.13;
+
+  group.add(eyeRight);
+
+
+  // ==========================
+  // NOSE
+  // ==========================
+
+  const noseGeo = new THREE.SphereGeometry(
+    0.045,
+    8,
+    8
+  );
+
+  const nose = new THREE.Mesh(
+    noseGeo,
+    noseMat
+  );
+
+  nose.scale.set(
+    1.2,
+    0.8,
+    0.7
+  );
+
+  nose.position.set(
+    0,
+    0.88,
+    0.58
+  );
+
+  group.add(nose);
+
+
+  // ==========================
+  // TAIL
+  // ==========================
+
+  const tailGeo = new THREE.SphereGeometry(
+    0.2,
+    10,
+    10
+  );
+
+  const tail = new THREE.Mesh(
+    tailGeo,
+    rabbitMat
+  );
+
+  tail.position.set(
+    0,
+    0.42,
+    -0.52
+  );
+
+  group.add(tail);
+
+
+  // ==========================
+  // FEET
+  // ==========================
+
+  const footGeo = new THREE.SphereGeometry(
+    0.18,
+    10,
+    10
+  );
+
+  const leftFoot = new THREE.Mesh(
+    footGeo,
+    rabbitMat
+  );
+
+  leftFoot.scale.set(
+    0.8,
+    0.5,
+    1.4
+  );
+
+  leftFoot.position.set(
+    -0.22,
+    0.08,
+    0.18
+  );
+
+  group.add(leftFoot);
+
+
+  const rightFoot = leftFoot.clone();
+
+  rightFoot.position.x = 0.22;
+
+  group.add(rightFoot);
+
+
+  // ==========================
+  // SAVE PARTS
+  // ==========================
+
+  group.userData.parts = {
+    body,
+    head,
+
+    earLeft,
+    earRight,
+
+    innerEarLeft,
+    innerEarRight,
+
+    eyeLeft,
+    eyeRight,
+
+    nose,
+
+    tail,
+
+    leftFoot,
+    rightFoot,
+  };
+
 
   return group;
 }
 
 const rabbits = [];
+
 for (let i = 0; i < 4; i++) {
+
   const rabbitMesh = createRabbit();
+
   islandGroup.add(rabbitMesh);
 
+
   rabbits.push({
+
     mesh: rabbitMesh,
-    orbitRadius: 2.8 + Math.random() * 3.2,
-    orbitSpeed: (0.12 + Math.random() * 0.15) * (i % 2 === 0 ? 1 : -1),
-    phase: (i / 4) * Math.PI * 2,
-    baseY: 4.05,
-    hopSpeed: 4.5 + Math.random() * 2.0,
-    hopHeight: 0.15,
-    scale: 0.75 + Math.random() * 0.25,
+
+    orbitRadius:
+      2.8 +
+      Math.random() * 3.2,
+
+    orbitSpeed:
+      (
+        0.12 +
+        Math.random() * 0.15
+      ) *
+      (
+        i % 2 === 0
+          ? 1
+          : -1
+      ),
+
+    phase:
+      (i / 4) *
+      Math.PI *
+      2,
+
+    baseY:
+      4.05,
+
+    hopSpeed:
+      3.3 +
+      Math.random() * 1.8,
+
+    hopHeight:
+      0.16 +
+      Math.random() * 0.12,
+
+    scale:
+      0.75 +
+      Math.random() * 0.25,
+
   });
-  rabbits[i].mesh.scale.setScalar(rabbits[i].scale);
+
 }
 
 function updateRabbits(time) {
-  rabbits.forEach((r) => {
-    const angle = r.phase + time * r.orbitSpeed;
-    const sign = Math.sign(r.orbitSpeed) || 1;
 
-    const x = Math.cos(angle) * r.orbitRadius;
-    const z = Math.sin(angle) * r.orbitRadius;
-    const hop = Math.abs(Math.sin(time * r.hopSpeed)) * r.hopHeight;
+  rabbits.forEach((r, index) => {
 
-    r.mesh.position.set(x, r.baseY + hop, z);
+    const rabbit = r.mesh;
+    const parts = rabbit.userData.parts;
 
-    const dx = -Math.sin(angle) * sign;
-    const dz = Math.cos(angle) * sign;
-    r.mesh.rotation.y = Math.atan2(dx, dz);
+    // Safety
+    if (!parts) return;
+
+
+    // ==========================
+    // MOVEMENT
+    // ==========================
+
+    // Làm đường chạy không quá đều
+    const movementVariation =
+      Math.sin(
+        time * 0.45 +
+        r.phase
+      ) * 0.12;
+
+
+    const angle =
+      r.phase +
+      time * r.orbitSpeed +
+      movementVariation;
+
+
+    const sign =
+      Math.sign(
+        r.orbitSpeed
+      ) || 1;
+
+
+    const x =
+      Math.cos(angle) *
+      r.orbitRadius;
+
+
+    const z =
+      Math.sin(angle) *
+      r.orbitRadius;
+
+
+    // ==========================
+    // JUMP
+    // ==========================
+
+    const jumpCycle =
+      Math.sin(
+        time * r.hopSpeed +
+        r.phase * 2.5
+      );
+
+
+    // Chỉ nhảy ở nửa chu kỳ phía trên
+    const jumpValue =
+      Math.max(
+        0,
+        jumpCycle
+      );
+
+
+    // Làm chuyển động mềm hơn
+    const hop =
+      Math.sin(
+        jumpValue *
+        Math.PI * 0.5
+      ) *
+      r.hopHeight;
+
+
+    rabbit.position.set(
+      x,
+      r.baseY + hop,
+      z
+    );
+
+
+    // ==========================
+    // FACE MOVEMENT DIRECTION
+    // ==========================
+
+    const dx =
+      -Math.sin(angle) *
+      sign;
+
+
+    const dz =
+      Math.cos(angle) *
+      sign;
+
+
+    rabbit.rotation.y =
+      Math.atan2(
+        dx,
+        dz
+      );
+
+
+    // ==========================
+    // SQUASH & STRETCH
+    // ==========================
+
+    let scaleY = 1;
+    let scaleXZ = 1;
+
+
+    if (jumpCycle > 0) {
+
+      // Đang nhảy
+      scaleY =
+        1 +
+        jumpValue * 0.07;
+
+      scaleXZ =
+        1 -
+        jumpValue * 0.035;
+
+    } else {
+
+      // Tiếp đất
+      const landing =
+        Math.abs(jumpCycle);
+
+      scaleY =
+        1 -
+        landing * 0.025;
+
+      scaleXZ =
+        1 +
+        landing * 0.012;
+    }
+
+
+    rabbit.scale.set(
+      r.scale * scaleXZ,
+      r.scale * scaleY,
+      r.scale * scaleXZ
+    );
+
+
+    // ==========================
+    // HEAD
+    // ==========================
+
+    parts.head.position.y =
+      0.93 +
+      Math.sin(
+        time * r.hopSpeed +
+        index
+      ) * 0.025;
+
+
+    parts.head.rotation.x =
+      Math.sin(
+        time * 1.4 +
+        r.phase
+      ) * 0.05;
+
+
+    parts.head.rotation.z =
+      Math.sin(
+        time * 0.7 +
+        index
+      ) * 0.025;
+
+
+    // ==========================
+    // EARS
+    // ==========================
+
+    const earSwing =
+      Math.sin(
+        time * 3.0 +
+        index * 1.7
+      ) * 0.10;
+
+
+    const earForward =
+      Math.sin(
+        time * 2.2 +
+        index
+      ) * 0.06;
+
+
+    parts.earLeft.rotation.z =
+      0.15 +
+      earSwing;
+
+
+    parts.earRight.rotation.z =
+      -0.15 -
+      earSwing;
+
+
+    parts.earLeft.rotation.x =
+      earForward;
+
+
+    parts.earRight.rotation.x =
+      Math.sin(
+        time * 2.4 +
+        index + 0.7
+      ) * 0.06;
+
+
+    // Inner ear đi theo outer ear
+    parts.innerEarLeft.rotation.z =
+      parts.earLeft.rotation.z;
+
+
+    parts.innerEarRight.rotation.z =
+      parts.earRight.rotation.z;
+
+
+    parts.innerEarLeft.rotation.x =
+      parts.earLeft.rotation.x;
+
+
+    parts.innerEarRight.rotation.x =
+      parts.earRight.rotation.x;
+
+
+    // ==========================
+    // TAIL
+    // ==========================
+
+    const tailPulse =
+      1 +
+      Math.sin(
+        time * 7 +
+        index * 2
+      ) * 0.10;
+
+
+    parts.tail.scale.set(
+      tailPulse,
+      tailPulse,
+      tailPulse
+    );
+
+
+    parts.tail.position.x =
+      Math.sin(
+        time * 6 +
+        index
+      ) * 0.035;
+
+
+    // ==========================
+    // FEET
+    // ==========================
+
+    const footKick =
+      jumpValue * 0.35;
+
+
+    parts.leftFoot.rotation.x =
+      -footKick;
+
+
+    parts.rightFoot.rotation.x =
+      -footKick;
+
+
+    // Khi nhảy, chân hơi thu vào
+    parts.leftFoot.position.z =
+      0.18 -
+      jumpValue * 0.08;
+
+
+    parts.rightFoot.position.z =
+      0.18 -
+      jumpValue * 0.08;
+
+
+    // ==========================
+    // BLINK
+    // ==========================
+
+    // Mỗi con chớp mắt khác thời điểm
+    const blinkCycle =
+      (
+        time * 0.8 +
+        index * 1.37
+      ) % 5;
+
+
+    let blinkScale = 1;
+
+
+    if (blinkCycle > 4.75) {
+
+      blinkScale = 0.15;
+
+    }
+
+
+    parts.eyeLeft.scale.y =
+      blinkScale;
+
+
+    parts.eyeRight.scale.y =
+      blinkScale;
+
+
+    // ==========================
+    // NOSE MOVEMENT
+    // ==========================
+
+    const noseMove =
+      1 +
+      Math.sin(
+        time * 8 +
+        index
+      ) * 0.08;
+
+
+    parts.nose.scale.set(
+      1.2 * noseMove,
+      0.8 * noseMove,
+      0.7
+    );
+
   });
+
 }
 
 // LANTERNS & MESSAGES WITH IMAGES
@@ -355,145 +1242,221 @@ const interactiveObjects = [];
 const wishList = [
     {
         text: "Trung Thu này, chúc em luôn vui vẻ, bình an và có thật nhiều khoảnh khắc khiến em mỉm cười.",
-        img: "./assets/1.jpg"
+        img: "./assets/1.jpg",
+        colors: ["#ff1744", "#d50000", "#7f0000"], // Đỏ
+        emissive: 0xff1744
     },
     {
         text: "Mong rằng những điều em đang cố gắng sẽ dần trở thành hiện thực, theo cách đẹp nhất mà em mong chờ.",
-        img: "./assets/2.jpg"
+        img: "./assets/2.jpg",
+        colors: ["#ffb300", "#ff6f00", "#e65100"], // Cam
+        emissive: 0xff8c00
     },
     {
         text: "Chúc em có một đêm trăng thật dịu dàng, đủ ấm áp để những mệt mỏi của những ngày vừa qua nhẹ đi một chút.",
-        img: "./assets/3.jpg"
+        img: "./assets/3.jpg",
+        colors: ["#fff176", "#fdd835", "#f9a825"], // Vàng
+        emissive: 0xffd600
     },
     {
         text: "Nếu hôm nay em có một điều ước, anh mong em sẽ dành nó cho chính mình — cho những điều em thật sự muốn và xứng đáng có được.",
-        img: "./assets/4.jpg"
+        img: "./assets/4.jpg",
+        colors: ["#76ff03", "#43a047", "#1b5e20"], // Xanh lá
+        emissive: 0x66ff33
     },
     {
         text: "Chúc em luôn giữ được sự dịu dàng và nụ cười ấy, kể cả trong những ngày mọi chuyện không được như ý.",
-        img: "./assets/5.jpg"
+        img: "./assets/5.jpg",
+        colors: ["#18ffff", "#00acc1", "#006064"], // Cyan
+        emissive: 0x00ffff
     },
     {
         text: "Hy vọng rằng trên hành trình phía trước, em sẽ gặp thật nhiều người tốt, thật nhiều chuyện vui và luôn có một nơi khiến em cảm thấy bình yên.",
-        img: "./assets/6.png"
+        img: "./assets/6.png",
+        colors: ["#448aff", "#2962ff", "#0d47a1"], // Xanh dương
+        emissive: 0x2979ff
     },
     {
         text: "Có những người không cần xuất hiện quá nhiều, nhưng chỉ cần nghĩ đến thôi cũng đủ làm một ngày trở nên vui hơn. Anh mong em luôn có những người như thế bên cạnh.",
-        img: "./assets/7.png"
+        img: "./assets/7.png",
+        colors: ["#b388ff", "#7c4dff", "#4527a0"], // Tím
+        emissive: 0x7c4dff
     },
     {
         text: "Trăng đêm nay có thể rất đẹp, nhưng anh vẫn mong em nhớ rằng đôi khi điều khiến một ngày trở nên đặc biệt chỉ đơn giản là một nụ cười.",
-        img: "./assets/8.png"
+        img: "./assets/8.png",
+        colors: ["#ff80ab", "#ff4081", "#ad1457"], // Hồng
+        emissive: 0xff4081
     },
     {
         text: "Chúc cho những ngày sắp tới của em sẽ nhẹ nhàng hơn một chút, may mắn hơn một chút và có thêm thật nhiều lý do để mong chờ ngày mai.",
-        img: "./assets/9.png"
+        img: "./assets/9.png",
+        colors: ["#ffffff", "#cfd8dc", "#78909c"], // Trắng bạc
+        emissive: 0xffffff
     },
     {
         text: "Và lời chúc cuối cùng, anh chỉ mong em luôn hạnh phúc. Không cần phải thật lớn lao, chỉ cần là thứ hạnh phúc khiến em cảm thấy: hôm nay thật đáng để mỉm cười.",
-        img: "./assets/10.jpg"
+        img: "./assets/10.jpg",
+        colors: ["#1de9b6", "#00bfa5", "#004d40"], // Xanh ngọc
+        emissive: 0x00e5b0
     }
 ];
 
-function createLanternTexture() {
-  const canvas = document.createElement("canvas");
-  canvas.width = 128;
-  canvas.height = 128;
-  const ctx = canvas.getContext("2d");
-  const grad = ctx.createLinearGradient(0, 0, 0, 128);
-  grad.addColorStop(0, "#ff4d4d");
-  grad.addColorStop(0.5, "#e63946");
-  grad.addColorStop(1, "#ffb703");
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, 128, 128);
-  ctx.strokeStyle = "#ffd700";
-  ctx.lineWidth = 6;
-  ctx.strokeRect(4, 4, 120, 120);
-  return new THREE.CanvasTexture(canvas);
+function createLanternTexture(colors) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 128;
+    canvas.height = 128;
+
+    const ctx = canvas.getContext("2d");
+
+    const grad = ctx.createLinearGradient(0, 0, 0, 128);
+
+    grad.addColorStop(0, colors[0]);
+    grad.addColorStop(0.5, colors[1]);
+    grad.addColorStop(1, colors[2]);
+
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 128, 128);
+
+    ctx.strokeStyle = "#ffd700";
+    ctx.lineWidth = 6;
+    ctx.strokeRect(4, 4, 120, 120);
+
+    return new THREE.CanvasTexture(canvas);
 }
 
-const lanternTex = createLanternTexture();
+function createLanternMesh(wishData) {
+    const group = new THREE.Group();
 
-function createLanternMesh() {
-  const group = new THREE.Group();
+    const lanternTex = createLanternTexture(wishData.colors);
 
-  const bodyGeo = new THREE.CylinderGeometry(0.6, 0.45, 1.4, 6);
-  const bodyMat = new THREE.MeshStandardMaterial({
-    map: lanternTex,
-    emissive: 0xff7700,
-    emissiveIntensity: 0.7,
-    roughness: 0.3,
-  });
-  const body = new THREE.Mesh(bodyGeo, bodyMat);
-  group.add(body);
+    const bodyGeo = new THREE.CylinderGeometry(
+        0.6,
+        0.45,
+        1.4,
+        6
+    );
 
-  const capGeo = new THREE.CylinderGeometry(0.63, 0.63, 0.1, 6);
-  const capMat = new THREE.MeshStandardMaterial({
-    color: 0xffd700,
-    metalness: 0.5,
-  });
-  const capTop = new THREE.Mesh(capGeo, capMat);
-  capTop.position.y = 0.7;
-  group.add(capTop);
+    const bodyMat = new THREE.MeshStandardMaterial({
+        map: lanternTex,
+        emissive: wishData.emissive,
+        emissiveIntensity: 0.8,
+        roughness: 0.3,
+    });
 
-  const tagGeo = new THREE.PlaneGeometry(0.35, 0.7);
-  const tagMat = new THREE.MeshBasicMaterial({
-    color: 0xd90429,
-    side: THREE.DoubleSide,
-  });
-  const tag = new THREE.Mesh(tagGeo, tagMat);
-  tag.position.set(0, -1.1, 0);
-  group.add(tag);
+    const body = new THREE.Mesh(bodyGeo, bodyMat);
+    group.add(body);
 
-  const spriteMat = new THREE.SpriteMaterial({
-    map: createParticleTexture(),
-    color: 0xffaa00,
-    transparent: true,
-    opacity: 0.7,
-    blending: THREE.AdditiveBlending,
-  });
-  const glow = new THREE.Sprite(spriteMat);
-  glow.scale.set(3.2, 3.2, 1);
-  group.add(glow);
+    const capGeo = new THREE.CylinderGeometry(
+        0.63,
+        0.63,
+        0.1,
+        6
+    );
 
-  const hitGeo = new THREE.SphereGeometry(1.6, 8, 8);
-  const hitMat = new THREE.MeshBasicMaterial({ visible: false });
-  const hitMesh = new THREE.Mesh(hitGeo, hitMat);
-  group.add(hitMesh);
+    const capMat = new THREE.MeshStandardMaterial({
+        color: 0xffd700,
+        metalness: 0.5,
+    });
 
-  return { group, hitMesh };
+    const capTop = new THREE.Mesh(capGeo, capMat);
+    capTop.position.y = 0.7;
+    group.add(capTop);
+
+    const tagGeo = new THREE.PlaneGeometry(0.35, 0.7);
+
+    const tagMat = new THREE.MeshBasicMaterial({
+        color: wishData.colors[1],
+        side: THREE.DoubleSide,
+    });
+
+    const tag = new THREE.Mesh(tagGeo, tagMat);
+    tag.position.set(0, -1.1, 0);
+    group.add(tag);
+
+    const spriteMat = new THREE.SpriteMaterial({
+        map: createParticleTexture(),
+        color: wishData.emissive,
+        transparent: true,
+        opacity: 0.7,
+        blending: THREE.AdditiveBlending,
+    });
+
+    const glow = new THREE.Sprite(spriteMat);
+    glow.scale.set(3.2, 3.2, 1);
+    group.add(glow);
+
+    const hitGeo = new THREE.SphereGeometry(1.6, 8, 8);
+
+    const hitMat = new THREE.MeshBasicMaterial({
+        visible: false
+    });
+
+    const hitMesh = new THREE.Mesh(hitGeo, hitMat);
+    group.add(hitMesh);
+
+    return {
+        group,
+        hitMesh
+    };
 }
+
 
 const lanternCount = isMobile ? 24 : 38;
 for (let i = 0; i < lanternCount; i++) {
-  const { group: lantern, hitMesh } = createLanternMesh();
 
-  const radius = 9 + Math.random() * 25;
-  const angle = Math.random() * Math.PI * 2;
-  const y = -1 + Math.random() * 30;
+    // Random một lời chúc
+    const wishData =
+        wishList[Math.floor(Math.random() * wishList.length)];
 
-  lantern.position.set(Math.cos(angle) * radius, y, Math.sin(angle) * radius);
+    // Tạo lantern với màu tương ứng lời chúc
+    const {
+        group: lantern,
+        hitMesh
+    } = createLanternMesh(wishData);
 
-  const wishData = wishList[Math.floor(Math.random() * wishList.length)];
+    // Vị trí
+    const radius = 9 + Math.random() * 25;
+    const angle = Math.random() * Math.PI * 2;
+    const y = -1 + Math.random() * 30;
 
-  lantern.userData = {
-    speedY: 0.008 + Math.random() * 0.012,
-    swingSpeed: 0.8 + Math.random() * 1.2,
-    initialX: lantern.position.x,
-    initialZ: lantern.position.z,
-    wish: wishData.text,
-    imgUrl: wishData.img,
-    id: i,
-  };
+    lantern.position.set(
+        Math.cos(angle) * radius,
+        y,
+        Math.sin(angle) * radius
+    );
 
-  const sc = 0.75 + Math.random() * 0.5;
-  lantern.scale.set(sc, sc, sc);
+    // Data của lantern
+    lantern.userData = {
+        speedY: 0.008 + Math.random() * 0.012,
 
-  hitMesh.userData.parentLantern = lantern;
+        swingSpeed:
+            0.8 + Math.random() * 1.2,
 
-  lanternsGroup.add(lantern);
-  lanterns.push(lantern);
-  interactiveObjects.push(hitMesh);
+        initialX: lantern.position.x,
+        initialZ: lantern.position.z,
+
+        wish: wishData.text,
+        imgUrl: wishData.img,
+
+        id: i,
+    };
+
+    // Random kích thước
+    const sc = 0.75 + Math.random() * 0.5;
+
+    lantern.scale.set(
+        sc,
+        sc,
+        sc
+    );
+
+    // Link hitbox với lantern
+    hitMesh.userData.parentLantern = lantern;
+
+    lanternsGroup.add(lantern);
+    lanterns.push(lantern);
+    interactiveObjects.push(hitMesh);
 }
 
 // FALLING PETALS & STARS
